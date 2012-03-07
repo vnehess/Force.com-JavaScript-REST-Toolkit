@@ -191,8 +191,8 @@ if (forcetk.Client === undefined) {
         this.ajax('/' + this.apiVersion + '/chatter/groups/', callback, error);
     }
 
-	forcetk.Client.prototype.myfiles = function(callback, error) {
-        this.ajax('/' + this.apiVersion + '/chatter/users/'+'005A0000000Y9F4'+
+	forcetk.Client.prototype.myfiles = function(userid, callback, error) {
+        this.ajax('/' + this.apiVersion + '/chatter/users/'+userid+
         	'/files', callback, error);
     }
     
