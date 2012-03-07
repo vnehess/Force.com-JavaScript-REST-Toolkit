@@ -181,6 +181,56 @@ if (forcetk.Client === undefined) {
         });
     }
 
+
+    /**
+     * Utility wrappers for calling Chatter Files API
+     * @author Ron Hess
+     * 
+     */
+	forcetk.Client.prototype.groups = function(callback, error) {
+        this.ajax('/' + this.apiVersion + '/chatter/groups/', callback, error);
+    }
+
+	forcetk.Client.prototype.myfiles = function(callback, error) {
+        this.ajax('/' + this.apiVersion + '/chatter/users/'+'005A0000000Y9F4'+
+        	'/files', callback, error);
+    }
+    
+    /** 
+     * getChatterFileData -- pull the data from the API and construct a base64 blob useful in 
+     * data URI ( http://en.wikipedia.org/wiki/Data_URI_scheme ) specifications to <IMG> tags
+     * 
+     * @param fileId is the chatter file ID
+     * 
+     * @renditionTypes is one of 
+     * 		PDF, FLASH, THUMB720BY480, THUMB240BY180, THUMB120BY90, 
+     * 		Default: THUMB120BY90
+     */
+    forcetk.Client.prototype.getChatterFileData = function(fileId,renditionType,callback,error,retry) {
+    	var that = this;
+    	var url = '/services/data' + '/' + this.apiVersion + 
+    		'/chatter/files/'+fileId+'/rendition';
+		
+		if ( renditionType != null ) { 
+			url += '?type=' + renditionType; 
+		}
+		
+		this.getChatterFile( url, null, function(response) {
+				// fetch the file from the response of type arraybuffer
+				var uInt8Array = new Uint8Array(response);
+			    var i = uInt8Array.length;
+			    var binaryString = new Array(i);
+			    while (i--)    {
+			      binaryString[i] = String.fromCharCode(uInt8Array[i]);
+			    }
+			    var data = binaryString.join('');
+			    
+			    // callback to the user with the binary data
+			    callback( window.btoa(data) );
+			}, 
+			error, retry);	
+    }
+    
     /**
      * Utility function to query the Chatter API and download a file
      * Note, raw XMLHttpRequest because JQuery mangles the arraybuffer
