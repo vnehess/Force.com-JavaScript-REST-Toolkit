@@ -248,8 +248,9 @@ if (forcetk.Client === undefined) {
         var url = this.instanceUrl + path;
 
         var request = new XMLHttpRequest();
-                  
-        request.open("GET",  (this.proxyUrl !== null) ? this.proxyUrl: url, true);
+        
+        var ts = $.now();          // cache false 
+        request.open("GET",  (this.proxyUrl !== null) ? this.proxyUrl + '?_='+ts: url, true);
         request.responseType = "arraybuffer";
         
         request.setRequestHeader(that.authzHeader, "OAuth " + that.sessionId);
